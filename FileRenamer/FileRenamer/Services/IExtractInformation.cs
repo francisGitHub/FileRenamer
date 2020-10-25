@@ -1,4 +1,4 @@
-﻿using FileRenamer.ViewModels;
+﻿using FileRenamer.Model;
 
 namespace FileRenamer.Services
 {

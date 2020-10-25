@@ -1,4 +1,6 @@
-﻿using FileRenamer.ViewModels;
+﻿using System;
+using FileRenamer.Model;
+using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Filter;
@@ -18,24 +20,25 @@ namespace FileRenamer.Services.Impl
         public BankStatementFields ExtractText(string filePath)
         {
             var bankStatementFields = new BankStatementFields();
-            if (_fileService.Exists(filePath))
+            
+            if (!_fileService.Exists(filePath)) 
             {
-                var rect = new iText.Kernel.Geom.Rectangle(350, 700, 595, 842);
-                TextRegionEventFilter regionFilter = new TextRegionEventFilter(rect);
+                return bankStatementFields;
 
-                var strategy = new FilteredTextEventListener(new LocationTextExtractionStrategy(), regionFilter);
-
-                var pdfDocument = new PdfDocument(new PdfReader(filePath));
-
-                var page = pdfDocument.GetPage(1);
-
-                string text = PdfTextExtractor.GetTextFromPage(page, strategy);
-
-                bankStatementFields.AccountNumber = GetAccountNumber(text);
-                bankStatementFields.DateRange = GetDateRange(text);
-
-                pdfDocument.Close();
             }
+
+            var rect = new Rectangle(350, 700, 595, 842);
+            var regionFilter = new TextRegionEventFilter(rect);
+
+            var strategy = new FilteredTextEventListener(new LocationTextExtractionStrategy(), regionFilter);
+            var pdfDocument = new PdfDocument(new PdfReader(filePath));
+            var page = pdfDocument.GetPage(1);
+            string text = PdfTextExtractor.GetTextFromPage(page, strategy);
+
+            bankStatementFields.AccountNumber = GetAccountNumber(text);
+            bankStatementFields.DateRange = GetDateRange(text);
+
+            pdfDocument.Close();
 
             return bankStatementFields;
         }
@@ -50,7 +53,23 @@ namespace FileRenamer.Services.Impl
         public string GetDateRange(string extractedText)
         {
             var textArray = extractedText.Split('\n');
-            return textArray[5].TrimStart("Period ".ToCharArray());
+            var textDateRange = textArray[5].TrimStart("Period ".ToCharArray());
+
+            var textDateRangeArray = textDateRange.Split('-');
+            var textStartDate = textDateRangeArray[0].Trim();
+            var textEndDate = textDateRangeArray[1].Trim();
+
+            return ConvertToDateRangeFormat(textStartDate, textEndDate);
+        }
+
+        private string ConvertToDateRangeFormat(string startDate, string endDate)
+        {
+            var parsedStartDate = DateTime.Parse(startDate);
+            var parsedEndDate = DateTime.Parse(endDate);
+
+            var formattedStartDate = $"{parsedStartDate:dd-MM-yy}";
+            var formattedEndDate = $"{parsedEndDate:dd-MM-yy}";
+            return $"{formattedStartDate}_{formattedEndDate}";
         }
     }
 }

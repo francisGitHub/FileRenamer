@@ -1,4 +1,4 @@
-﻿namespace FileRenamer.ViewModels
+﻿namespace FileRenamer.Model
 {
     public class BankStatementFields
     {

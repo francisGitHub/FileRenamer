@@ -3,18 +3,18 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:FileRenamer"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="Jordan Pornhub"
     Width="800"
-    Height="450"
+    Height="300"
+    DataContext="MainWindowViewModel"
     mc:Ignorable="d">
-    <Grid Margin="0,10,0,10">
+    <Grid Margin="5,5,5,5" VerticalAlignment="Top">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*" />
-            <ColumnDefinition Width="14*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
             <RowDefinition Height="40" />
             <RowDefinition Height="40" />
             <RowDefinition Height="40" />
@@ -22,57 +22,73 @@
         <StackPanel
             Grid.Row="0"
             Grid.ColumnSpan="2"
-            Margin="5,0,5,1"
             VerticalAlignment="Center"
             Orientation="Horizontal">
             <Button
                 Width="150"
                 Height="30"
-                Margin="0,5,5,5"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
-                Content="Extract" />
+                Click="SelectFile"
+                Content="SELECT FILE" />
             <TextBox
-                Name="DocumentPath"
+                x:Name="DocumentPath"
+                Padding="5,0,0,0"
                 VerticalAlignment="Center"
                 BorderThickness="0"
-                Text="C:\Code\Test\TestStatement.pdf" />
+                Text="" />
         </StackPanel>
         <StackPanel
             Grid.Row="1"
             Grid.ColumnSpan="2"
-            Margin="5,5,5,6"
             VerticalAlignment="Center"
             Orientation="Horizontal">
-            <TextBlock VerticalAlignment="Center" Text="Account Number" />
-            <TextBox
-                x:Name="AccountNumber"
-                Width="405"
+            <Button
+                Width="150"
                 Height="30"
-                Margin="44,0"
-                VerticalContentAlignment="Center"
-                Text="" />
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Content="STATEMENT TYPE"
+                IsEnabled="False" />
+            <TextBox
+                x:Name="StatementType"
+                Padding="5,0,0,0"
+                VerticalAlignment="Center"
+                BorderThickness="0"
+                Text="Statement CBA Everyday" />
         </StackPanel>
         <StackPanel
             Grid.Row="2"
             Grid.ColumnSpan="2"
-            Margin="5,6,5,5"
             VerticalAlignment="Center"
             Orientation="Horizontal">
-            <TextBlock VerticalAlignment="Center" Text="Date Range" />
-            <TextBox
-                x:Name="DateRange"
-                Width="373"
+            <Button
+                Width="150"
                 Height="30"
-                Margin="10,0"
-                VerticalContentAlignment="Center"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Click="Extract"
+                Content="PREVIEW FILENAME"
+                IsEnabled="{Binding PreviewFileNameButtonEnabled}" />
+            <TextBox
+                x:Name="NewFileName"
+                Padding="5,0,0,0"
+                VerticalAlignment="Center"
+                BorderThickness="0"
                 Text="" />
         </StackPanel>
         <StackPanel
-            Grid.Row="2"
+            Grid.Row="3"
             Grid.ColumnSpan="2"
-            Margin="0,20,0,21"
             VerticalAlignment="Center"
-            Orientation="Horizontal" />
+            Orientation="Horizontal">
+            <Button
+                Width="150"
+                Height="30"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Click="RenameFile"
+                Content="RENAME FILE" />
+        </StackPanel>
     </Grid>
 </Window>
