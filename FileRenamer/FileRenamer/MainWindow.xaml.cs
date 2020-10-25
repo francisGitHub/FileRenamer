@@ -32,6 +32,13 @@ namespace FileRenamer
 
         private void RenameFile(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(DocumentPath.Text) || string.IsNullOrWhiteSpace(NewFileName.Text))
+            {
+                MessageBox.Show(
+                    "Please ensure that you've selected a file, and pressed PREVIEW FILENAME to extract the information");
+                return;
+            }
+
             try
             {
                 _fileRenameService.RenameFile(DocumentPath.Text, NewFileName.Text);
@@ -50,9 +57,16 @@ namespace FileRenamer
                 return;
             }
 
-            var extractedFields = _textExtractorService.ExtractText(DocumentPath.Text);
+            try
+            {
+                var extractedFields = _textExtractorService.ExtractText(DocumentPath.Text);
 
-            NewFileName.Text = _fileRenameService.GetFileFormat(DocumentPath.Text, StatementType.Text, extractedFields);
+                NewFileName.Text = _fileRenameService.GetFileFormat(DocumentPath.Text, StatementType.Text, extractedFields);
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show($"{exception.Message}");
+            }
         }
     }
 }
