@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using FileRenamer.Model;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
@@ -45,21 +46,51 @@ namespace FileRenamer.Services.Impl
 
         public string GetAccountNumber(string extractedText)
         {
-            var textArray = extractedText.Split('\n');
-            var bsbAccountNumber = textArray[2].Split(' ');
-            return bsbAccountNumber[2];
+            try
+            {
+                var textArray = extractedText.Split('\n');
+
+                // Separating it in spaces as sometimes the BSB is added into the account number
+                // Getting the last item should be the account number
+                var accountNumberArray = textArray[2].Split(' ');
+                var accountNumber = accountNumberArray[accountNumberArray.Length - 1];
+                return accountNumber;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"There was a problem trying to extract the Account Number: {e.Message}");
+                return "";
+            }
         }
 
         public string GetDateRange(string extractedText)
         {
-            var textArray = extractedText.Split('\n');
-            var textDateRange = textArray[5].TrimStart("Period ".ToCharArray());
+            try
+            {
+                var textArray = extractedText.Split('\n');
 
-            var textDateRangeArray = textDateRange.Split('-');
-            var textStartDate = textDateRangeArray[0].Trim();
-            var textEndDate = textDateRangeArray[1].Trim();
+                string textDateRange = null;
 
-            return ConvertToDateRangeFormat(textStartDate, textEndDate);
+                if (textArray[4].StartsWith("Statement period"))
+                {
+                    textDateRange = textArray[4].TrimStart("Statement period ".ToCharArray());
+                }
+                else if (textArray[5].StartsWith("Period"))
+                {
+                    textDateRange = textArray[5].TrimStart("Period ".ToCharArray());
+                }
+
+                var textDateRangeArray = textDateRange?.Split('-');
+                var textStartDate = textDateRangeArray[0].Trim();
+                var textEndDate = textDateRangeArray[1].Trim();
+
+                return ConvertToDateRangeFormat(textStartDate, textEndDate);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"There was a problem trying to extract the Date: {e.Message}");
+                return "";
+            }
         }
 
         private string ConvertToDateRangeFormat(string startDate, string endDate)
