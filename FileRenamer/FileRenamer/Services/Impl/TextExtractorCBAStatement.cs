@@ -41,10 +41,7 @@ namespace FileRenamer.Services.Impl
 
             }
 
-            // TODO get rid of this magic string
-            string dest = "C:/itextExamples/drawingLine.pdf";
-            PdfWriter writer = new PdfWriter(dest);
-            var pdfDocument = new PdfDocument(new PdfReader(filePath).SetUnethicalReading(true), writer);
+            var pdfDocument = new PdfDocument(new PdfReader(filePath).SetUnethicalReading(true));
             var page = pdfDocument.GetPage(1);
 
             bankStatementFields.AccountNumber = GetAccountNumber(page);
@@ -62,13 +59,6 @@ namespace FileRenamer.Services.Impl
                 var regionFilter = new TextRegionEventFilter(AccountNumberLocation);
                 var strategy = new FilteredTextEventListener(new LocationTextExtractionStrategy(), regionFilter);
                 string accountNumber = PdfTextExtractor.GetTextFromPage(page, strategy).Trim();
-
-                //PdfCanvas canvas = new PdfCanvas(page);
-                //canvas.SetFillColor(new DeviceCmyk(1, 0, 0, 0))
-                //    .Rectangle(rectangle)
-                //    .FillStroke();
-
-                //canvas.ClosePathStroke();
 
                 return StripOutBsb(accountNumber);
             }
@@ -90,13 +80,6 @@ namespace FileRenamer.Services.Impl
                     var regionFilter = new TextRegionEventFilter(statementPeriodLocation);
                     var strategy = new FilteredTextEventListener(new LocationTextExtractionStrategy(), regionFilter);
                     string textDateRange = PdfTextExtractor.GetTextFromPage(page, strategy);
-
-                    PdfCanvas canvas = new PdfCanvas(page);
-                    canvas.SetFillColor(new DeviceCmyk(1, 0, 0, 0))
-                        .Rectangle(MultiLineStatementPeriodLocation)
-                        .FillStroke();
-
-                    canvas.ClosePathStroke();
 
                     var textDateRangeArray = textDateRange?.Split('-');
                     var textStartDate = textDateRangeArray[0].Trim();
