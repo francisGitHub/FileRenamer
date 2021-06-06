@@ -1,11 +1,12 @@
 ﻿using FileRenamer.Model;
+using iText.Kernel.Pdf;
 
 namespace FileRenamer.Services
 {
     public interface IExtractInformation
     {
         BankStatementFields ExtractText(string filePath);
-        string GetAccountNumber(string extractedText);
-        string GetDateRange(string extractedText);
+        string GetAccountNumber(PdfPage extractedText);
+        string GetDateRange(PdfPage extractedText);
     }
 }

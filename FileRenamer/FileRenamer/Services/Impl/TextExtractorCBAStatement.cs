@@ -1,8 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
+using System.Windows.Documents;
 using FileRenamer.Model;
+using iText.Kernel.Colors;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Canvas;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Filter;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
@@ -12,6 +17,14 @@ namespace FileRenamer.Services.Impl
     public class TextExtractorCBAStatement : IExtractInformation
     {
         private readonly IFileService _fileService;
+        static readonly Rectangle AccountNumberLocation = new Rectangle(430, 748, 140, 16);
+        static readonly Rectangle SingleLineStatementPeriodLocation = new Rectangle(430, 732, 140, 16);
+        static readonly Rectangle MultiLineStatementPeriodLocation = new Rectangle(420, 715, 140, 16);
+        static readonly List<Rectangle> StatementPeriodLocations = new List<Rectangle>
+        {
+            SingleLineStatementPeriodLocation,
+            MultiLineStatementPeriodLocation
+        };
 
         public TextExtractorCBAStatement(IFileService fileService)
         {
@@ -28,33 +41,36 @@ namespace FileRenamer.Services.Impl
 
             }
 
-            var rect = new Rectangle(350, 700, 595, 842);
-            var regionFilter = new TextRegionEventFilter(rect);
-
-            var strategy = new FilteredTextEventListener(new LocationTextExtractionStrategy(), regionFilter);
-            var pdfDocument = new PdfDocument(new PdfReader(filePath));
+            // TODO get rid of this magic string
+            string dest = "C:/itextExamples/drawingLine.pdf";
+            PdfWriter writer = new PdfWriter(dest);
+            var pdfDocument = new PdfDocument(new PdfReader(filePath).SetUnethicalReading(true), writer);
             var page = pdfDocument.GetPage(1);
-            string text = PdfTextExtractor.GetTextFromPage(page, strategy);
 
-            bankStatementFields.AccountNumber = GetAccountNumber(text);
-            bankStatementFields.DateRange = GetDateRange(text);
+            bankStatementFields.AccountNumber = GetAccountNumber(page);
+            bankStatementFields.DateRange = GetDateRange(page);
 
             pdfDocument.Close();
 
             return bankStatementFields;
         }
 
-        public string GetAccountNumber(string extractedText)
+        public string GetAccountNumber(PdfPage page)
         {
             try
             {
-                var textArray = extractedText.Split('\n');
+                var regionFilter = new TextRegionEventFilter(AccountNumberLocation);
+                var strategy = new FilteredTextEventListener(new LocationTextExtractionStrategy(), regionFilter);
+                string accountNumber = PdfTextExtractor.GetTextFromPage(page, strategy).Trim();
 
-                // Separating it in spaces as sometimes the BSB is added into the account number
-                // Getting the last item should be the account number
-                var accountNumberArray = textArray[2].Split(' ');
-                var accountNumber = accountNumberArray[accountNumberArray.Length - 1];
-                return accountNumber;
+                //PdfCanvas canvas = new PdfCanvas(page);
+                //canvas.SetFillColor(new DeviceCmyk(1, 0, 0, 0))
+                //    .Rectangle(rectangle)
+                //    .FillStroke();
+
+                //canvas.ClosePathStroke();
+
+                return StripOutBsb(accountNumber);
             }
             catch (Exception e)
             {
@@ -63,34 +79,38 @@ namespace FileRenamer.Services.Impl
             }
         }
 
-        public string GetDateRange(string extractedText)
+        public string GetDateRange(PdfPage page)
         {
-            try
+            var possibleDateRanges = new List<string>();
+
+            foreach (var statementPeriodLocation in StatementPeriodLocations)
             {
-                var textArray = extractedText.Split('\n');
-
-                string textDateRange = null;
-
-                if (textArray[4].StartsWith("Statement period"))
+                try
                 {
-                    textDateRange = textArray[4].TrimStart("Statement period ".ToCharArray());
+                    var regionFilter = new TextRegionEventFilter(statementPeriodLocation);
+                    var strategy = new FilteredTextEventListener(new LocationTextExtractionStrategy(), regionFilter);
+                    string textDateRange = PdfTextExtractor.GetTextFromPage(page, strategy);
+
+                    PdfCanvas canvas = new PdfCanvas(page);
+                    canvas.SetFillColor(new DeviceCmyk(1, 0, 0, 0))
+                        .Rectangle(MultiLineStatementPeriodLocation)
+                        .FillStroke();
+
+                    canvas.ClosePathStroke();
+
+                    var textDateRangeArray = textDateRange?.Split('-');
+                    var textStartDate = textDateRangeArray[0].Trim();
+                    var textEndDate = textDateRangeArray[1].Trim();
+
+                    possibleDateRanges.Add(ConvertToDateRangeFormat(textStartDate, textEndDate));
                 }
-                else if (textArray[5].StartsWith("Period"))
+                catch (Exception e)
                 {
-                    textDateRange = textArray[5].TrimStart("Period ".ToCharArray());
+                    // Log here rather than throw
                 }
-
-                var textDateRangeArray = textDateRange?.Split('-');
-                var textStartDate = textDateRangeArray[0].Trim();
-                var textEndDate = textDateRangeArray[1].Trim();
-
-                return ConvertToDateRangeFormat(textStartDate, textEndDate);
             }
-            catch (Exception e)
-            {
-                MessageBox.Show($"There was a problem trying to extract the Date: {e.Message}");
-                return "";
-            }
+
+            return possibleDateRanges.FirstOrDefault();
         }
 
         private string ConvertToDateRangeFormat(string startDate, string endDate)
@@ -101,6 +121,13 @@ namespace FileRenamer.Services.Impl
             var formattedStartDate = $"{parsedStartDate:dd-MM-yy}";
             var formattedEndDate = $"{parsedEndDate:dd-MM-yy}";
             return $"{formattedStartDate}_{formattedEndDate}";
+        }
+
+        private string StripOutBsb(string accountNumberString)
+        {
+            var accountNumberArray = accountNumberString.Split(' ');
+
+            return accountNumberArray.LastOrDefault();
         }
     }
 }
