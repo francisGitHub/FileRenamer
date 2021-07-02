@@ -2,21 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using System.Windows.Documents;
-using FileRenamer.Model;
-using iText.Kernel.Colors;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
-using iText.Kernel.Pdf.Canvas;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Filter;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
 
-namespace FileRenamer.Services.Impl
+namespace FileRenamer.Services.Impl.CBA_Statements
 {
-    public class TextExtractorCBAStatement : IExtractInformation
+    public class TextExtractorCbaStatement : TextExtractorServiceBase
     {
-        private readonly IFileService _fileService;
         static readonly Rectangle AccountNumberLocation = new Rectangle(430, 748, 140, 16);
         static readonly Rectangle SingleLineStatementPeriodLocation = new Rectangle(430, 732, 140, 16);
         static readonly Rectangle MultiLineStatementPeriodLocation = new Rectangle(420, 715, 140, 16);
@@ -26,39 +21,15 @@ namespace FileRenamer.Services.Impl
             MultiLineStatementPeriodLocation
         };
 
-        public TextExtractorCBAStatement(IFileService fileService)
-        {
-            _fileService = fileService;
-        }
+        public TextExtractorCbaStatement(IFileService fileService) : base(fileService) { }
 
-        public BankStatementFields ExtractText(string filePath)
-        {
-            var bankStatementFields = new BankStatementFields();
-            
-            if (!_fileService.Exists(filePath)) 
-            {
-                return bankStatementFields;
-
-            }
-
-            var pdfDocument = new PdfDocument(new PdfReader(filePath).SetUnethicalReading(true));
-            var page = pdfDocument.GetPage(1);
-
-            bankStatementFields.AccountNumber = GetAccountNumber(page);
-            bankStatementFields.DateRange = GetDateRange(page);
-
-            pdfDocument.Close();
-
-            return bankStatementFields;
-        }
-
-        public string GetAccountNumber(PdfPage page)
+        public override string GetAccountNumber(PdfDocument pdfDocument)
         {
             try
             {
                 var regionFilter = new TextRegionEventFilter(AccountNumberLocation);
                 var strategy = new FilteredTextEventListener(new LocationTextExtractionStrategy(), regionFilter);
-                string accountNumber = PdfTextExtractor.GetTextFromPage(page, strategy).Trim();
+                string accountNumber = PdfTextExtractor.GetTextFromPage(pdfDocument.GetFirstPage(), strategy).Trim();
 
                 return StripOutBsb(accountNumber);
             }
@@ -69,7 +40,7 @@ namespace FileRenamer.Services.Impl
             }
         }
 
-        public string GetDateRange(PdfPage page)
+        public override string GetDateRange(PdfDocument pdfDocument)
         {
             var possibleDateRanges = new List<string>();
 
@@ -79,7 +50,7 @@ namespace FileRenamer.Services.Impl
                 {
                     var regionFilter = new TextRegionEventFilter(statementPeriodLocation);
                     var strategy = new FilteredTextEventListener(new LocationTextExtractionStrategy(), regionFilter);
-                    string textDateRange = PdfTextExtractor.GetTextFromPage(page, strategy);
+                    string textDateRange = PdfTextExtractor.GetTextFromPage(pdfDocument.GetFirstPage(), strategy);
 
                     var textDateRangeArray = textDateRange?.Split('-');
                     var textStartDate = textDateRangeArray[0].Trim();
@@ -94,23 +65,6 @@ namespace FileRenamer.Services.Impl
             }
 
             return possibleDateRanges.FirstOrDefault();
-        }
-
-        private string ConvertToDateRangeFormat(string startDate, string endDate)
-        {
-            var parsedStartDate = DateTime.Parse(startDate);
-            var parsedEndDate = DateTime.Parse(endDate);
-
-            var formattedStartDate = $"{parsedStartDate:dd-MM-yy}";
-            var formattedEndDate = $"{parsedEndDate:dd-MM-yy}";
-            return $"{formattedStartDate}_{formattedEndDate}";
-        }
-
-        private string StripOutBsb(string accountNumberString)
-        {
-            var accountNumberArray = accountNumberString.Split(' ');
-
-            return accountNumberArray.LastOrDefault();
         }
     }
 }

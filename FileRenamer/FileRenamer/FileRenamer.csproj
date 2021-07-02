@@ -123,11 +123,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="Services\IDebugTextExtractionRegion.cs" />
     <Compile Include="Services\IFileIOService.cs" />
     <Compile Include="Services\IExtractInformation.cs" />
     <Compile Include="Services\Impl\FileRenameService.cs" />
     <Compile Include="Services\Impl\FileService.cs" />
-    <Compile Include="Services\Impl\TextExtractorCBAStatement.cs" />
+    <Compile Include="Services\Impl\CBA Statements\TextExtractorCbaStatement.cs" />
+    <Compile Include="Services\Impl\CBA Statements\TextExtractorCbaTransactionListingStatement.cs" />
+    <Compile Include="Services\Impl\TextExtractorServiceBase.cs" />
     <Compile Include="Services\IRenameFile.cs" />
     <Compile Include="Views\App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>

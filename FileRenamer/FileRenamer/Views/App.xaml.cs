@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using FileRenamer.Services;
 using FileRenamer.Services.Impl;
+using FileRenamer.Services.Impl.CBA_Statements;
 using Ninject;
 
 namespace FileRenamer.Views
@@ -27,14 +28,14 @@ namespace FileRenamer.Views
 
             _container.Bind<IFileService>().To<FileService>();
             _container.Bind<IRenameFile>().To<FileRenameService>();
-            _container.Bind<IExtractInformation>().To<TextExtractorCBAStatement>();
+            _container.Bind<IExtractInformation>().To<TextExtractorCbaTransactionListingStatement>();
+            _container.Bind<IDebugTextExtractionRegion>().To<TextExtractorCbaTransactionListingStatement>();
         }
 
         private void ComposeObjects()
         {
             Current.MainWindow = this._container.Get<MainWindow>();
-            Current.MainWindow.Title = "Jordan's Pornhub Premium";
+            Current.MainWindow.Title = "Bank Statement Renamer";
         }
-
     }
 }

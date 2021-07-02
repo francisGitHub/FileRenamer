@@ -6,7 +6,7 @@ namespace FileRenamer.Services
     public interface IExtractInformation
     {
         BankStatementFields ExtractText(string filePath);
-        string GetAccountNumber(PdfPage extractedText);
-        string GetDateRange(PdfPage extractedText);
+        string GetAccountNumber(PdfDocument pdfDocument);
+        string GetDateRange(PdfDocument pdfDocument);
     }
 }

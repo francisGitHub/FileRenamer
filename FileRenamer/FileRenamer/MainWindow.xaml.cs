@@ -12,14 +12,17 @@ namespace FileRenamer
         private readonly IFileService _fileService;
         private readonly IRenameFile _fileRenameService;
         private readonly IExtractInformation _textExtractorService;
+        private readonly IDebugTextExtractionRegion _debugTextExtractionService;
 
         public MainWindow(
             IFileService fileService,
             IRenameFile fileRenameService,
-            IExtractInformation textExtractorService)
+            IExtractInformation textExtractorService,
+            IDebugTextExtractionRegion debugTextExtractionService)
         {
             _fileService = fileService;
             _fileRenameService = fileRenameService;
+            _debugTextExtractionService = debugTextExtractionService;
             _textExtractorService = textExtractorService;
 
             InitializeComponent();
@@ -66,6 +69,25 @@ namespace FileRenamer
             catch (Exception exception)
             {
                 MessageBox.Show($"{exception.Message}");
+            }
+        }
+
+        private void DebugRectangleRegion(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(DocumentPath.Text))
+            {
+                MessageBox.Show("Please select a file");
+                return;
+            }
+
+            try
+            {
+                _debugTextExtractionService.DrawRectangleArea(new iText.Kernel.Geom.Rectangle(28, 0, 66, 1000), DocumentPath.Text);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+                throw;
             }
         }
     }
