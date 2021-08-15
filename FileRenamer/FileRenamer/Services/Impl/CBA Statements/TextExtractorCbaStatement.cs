@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
@@ -35,8 +34,7 @@ namespace FileRenamer.Services.Impl.CBA_Statements
             }
             catch (Exception e)
             {
-                MessageBox.Show($"There was a problem trying to extract the Account Number: {e.Message}");
-                return "";
+                throw;
             }
         }
 
@@ -58,7 +56,7 @@ namespace FileRenamer.Services.Impl.CBA_Statements
 
                     possibleDateRanges.Add(ConvertToDateRangeFormat(textStartDate, textEndDate));
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     // Log here rather than throw
                 }

@@ -39,7 +39,9 @@ namespace FileRenamer.Services.Impl
 
         public void DrawRectangleArea(Rectangle rectangle, string inputFilePath)
         {
-            PdfDocument pdfDoc = new PdfDocument(new PdfReader(inputFilePath), new PdfWriter("C:\\temp\\output.pdf"));
+            var pdfReader = new PdfReader(inputFilePath);
+            pdfReader.SetUnethicalReading(true);
+            PdfDocument pdfDoc = new PdfDocument(pdfReader, new PdfWriter("C:\\temp\\output.pdf"));
             PdfCanvas canvas = new PdfCanvas(pdfDoc.GetPage(1));
             var colour = new DeviceCmyk(1, 1, 1, 1);
             canvas.SetFillColor(colour);
@@ -65,9 +67,14 @@ namespace FileRenamer.Services.Impl
 
         protected string StripOutBsb(string accountNumberString)
         {
-            var accountNumberArray = accountNumberString.Trim().Replace(" ", "");
+            if (accountNumberString.Contains(' '))
+            {
+                var accountNumberArray = accountNumberString.Trim().Replace(" ", "");
 
-            return accountNumberArray.Substring(6);
+                return accountNumberArray.Substring(6);
+            }
+
+            return accountNumberString;
         }
     }
 }

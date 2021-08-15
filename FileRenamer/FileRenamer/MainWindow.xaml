@@ -4,105 +4,151 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Width="800"
-    Height="300"
     DataContext="MainWindowViewModel"
     mc:Ignorable="d">
-    <Grid Margin="5,5,5,5" VerticalAlignment="Top">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="40" />
-            <RowDefinition Height="40" />
-            <RowDefinition Height="40" />
-            <RowDefinition Height="40" />
-            <RowDefinition Height="40" />
-        </Grid.RowDefinitions>
-        <StackPanel
-            Grid.Row="0"
-            Grid.ColumnSpan="2"
-            VerticalAlignment="Center"
-            Orientation="Horizontal">
-            <Button
-                Width="150"
-                Height="30"
-                HorizontalAlignment="Left"
+    <StackPanel>
+        <Grid Margin="5,5,5,5" VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <StackPanel
+                Grid.Row="0"
+                Grid.ColumnSpan="2"
                 VerticalAlignment="Center"
-                Click="SelectFile"
-                Content="SELECT FILE" />
-            <TextBox
-                x:Name="DocumentPath"
-                Padding="5,0,0,0"
+                Orientation="Horizontal">
+                <Button
+                    Width="150"
+                    Height="30"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Click="SelectFolder"
+                    Content="SELECT FOLDER" />
+                <TextBox
+                    x:Name="FolderPath"
+                    Padding="5,0,0,0"
+                    VerticalAlignment="Center"
+                    BorderThickness="0"
+                    Text="" />
+            </StackPanel>
+            <StackPanel
+                Grid.Row="1"
+                Grid.ColumnSpan="2"
                 VerticalAlignment="Center"
-                BorderThickness="0"
-                Text="" />
-        </StackPanel>
-        <StackPanel
-            Grid.Row="1"
-            Grid.ColumnSpan="2"
-            VerticalAlignment="Center"
-            Orientation="Horizontal">
-            <Button
-                Width="150"
-                Height="30"
-                HorizontalAlignment="Center"
+                Orientation="Horizontal">
+                <Button
+                    Width="150"
+                    Height="30"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Click="TryAndRename"
+                    Content="TRY AND RENAME "
+                    IsEnabled="True" />
+            </StackPanel>
+
+        </Grid>
+        <Grid Height="307">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
+            </Grid.RowDefinitions>
+            <StackPanel
+                Grid.Row="0"
+                Grid.ColumnSpan="2"
                 VerticalAlignment="Center"
-                Content="STATEMENT TYPE"
-                IsEnabled="False" />
-            <TextBox
-                x:Name="StatementType"
-                Padding="5,0,0,0"
+                Orientation="Horizontal">
+                <Button
+                    Width="150"
+                    Height="30"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Click="SelectFile"
+                    Content="SELECT FILE" />
+                <TextBox
+                    x:Name="DocumentPath"
+                    Padding="5,0,0,0"
+                    VerticalAlignment="Center"
+                    BorderThickness="0"
+                    Text="" />
+            </StackPanel>
+            <StackPanel
+                Grid.Row="1"
+                Grid.ColumnSpan="2"
                 VerticalAlignment="Center"
-                BorderThickness="0"
-                Text="Statement CBA Everyday" />
-        </StackPanel>
-        <StackPanel
-            Grid.Row="2"
-            Grid.ColumnSpan="2"
-            VerticalAlignment="Center"
-            Orientation="Horizontal">
-            <Button
-                Width="150"
-                Height="30"
-                HorizontalAlignment="Left"
+                Orientation="Horizontal">
+                <Button
+                    Width="150"
+                    Height="30"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Content="STATEMENT TYPE"
+                    IsEnabled="False" />
+                <TextBox
+                    x:Name="StatementType"
+                    Padding="5,0,0,0"
+                    VerticalAlignment="Center"
+                    BorderThickness="0"
+                    Text="Statement CBA Everyday" />
+            </StackPanel>
+            <StackPanel
+                Grid.Row="2"
+                Grid.ColumnSpan="2"
                 VerticalAlignment="Center"
-                Click="Extract"
-                Content="PREVIEW FILENAME"
-                IsEnabled="{Binding PreviewFileNameButtonEnabled}" />
-            <TextBox
-                x:Name="NewFileName"
-                Padding="5,0,0,0"
+                Orientation="Horizontal">
+                <Button
+                    Width="150"
+                    Height="30"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Click="Extract"
+                    Content="PREVIEW FILENAME"
+                    IsEnabled="{Binding PreviewFileNameButtonEnabled}" />
+                <TextBox
+                    x:Name="NewFileName"
+                    Padding="5,0,0,0"
+                    VerticalAlignment="Center"
+                    BorderThickness="0"
+                    Text="" />
+            </StackPanel>
+            <StackPanel
+                Grid.Row="3"
+                Grid.ColumnSpan="2"
                 VerticalAlignment="Center"
-                BorderThickness="0"
-                Text="" />
-        </StackPanel>
-        <StackPanel
-            Grid.Row="3"
-            Grid.ColumnSpan="2"
-            VerticalAlignment="Center"
-            Orientation="Horizontal">
-            <Button
-                Width="150"
-                Height="30"
-                HorizontalAlignment="Left"
+                Orientation="Horizontal">
+                <Button
+                    Width="150"
+                    Height="30"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Click="RenameFile"
+                    Content="RENAME FILE" />
+            </StackPanel>
+            <StackPanel
+                Grid.Row="4"
+                Grid.ColumnSpan="2"
                 VerticalAlignment="Center"
-                Click="RenameFile"
-                Content="RENAME FILE" />
-        </StackPanel>
-        <StackPanel
-            Grid.Row="4"
-            Grid.ColumnSpan="2"
-            VerticalAlignment="Center"
-            Orientation="Horizontal">
-            <Button
-                Width="150"
-                Height="30"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                Click="DebugRectangleRegion"
-                Content="DEBUG RECTANGLE REGION" />
-        </StackPanel>
-    </Grid>
+                Orientation="Horizontal">
+                <Button
+                    Width="150"
+                    Height="30"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Click="DebugRectangleRegion"
+                    Content="DEBUG RECTANGLE REGION" />
+            </StackPanel>
+        </Grid>
+    </StackPanel>
 </Window>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using FileRenamer.Services;
+using Microsoft.WindowsAPICodePack.Shell.Interop;
 
 namespace FileRenamer
 {
@@ -11,17 +12,20 @@ namespace FileRenamer
     {
         private readonly IFileService _fileService;
         private readonly IRenameFile _fileRenameService;
+        private readonly IRenameFolderService _folderRenameService;
         private readonly IExtractInformation _textExtractorService;
         private readonly IDebugTextExtractionRegion _debugTextExtractionService;
 
         public MainWindow(
             IFileService fileService,
             IRenameFile fileRenameService,
+            IRenameFolderService folderRenameService,
             IExtractInformation textExtractorService,
             IDebugTextExtractionRegion debugTextExtractionService)
         {
             _fileService = fileService;
             _fileRenameService = fileRenameService;
+            _folderRenameService = folderRenameService;
             _debugTextExtractionService = debugTextExtractionService;
             _textExtractorService = textExtractorService;
 
@@ -82,13 +86,28 @@ namespace FileRenamer
 
             try
             {
-                _debugTextExtractionService.DrawRectangleArea(new iText.Kernel.Geom.Rectangle(28, 0, 66, 1000), DocumentPath.Text);
+                _debugTextExtractionService.DrawRectangleArea(new iText.Kernel.Geom.Rectangle(430, 752, 140, 16), DocumentPath.Text);
             }
             catch (Exception exception)
             {
                 Console.WriteLine(exception);
                 throw;
             }
+        }
+
+        private void SelectFolder(object sender, RoutedEventArgs e)
+        {
+            FolderPath.Text = _fileService.SelectFolderDialog();
+        }
+
+        private void TryAndRename(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(FolderPath.Text))
+            {
+                MessageBox.Show("Please Select A Folder");
+            }
+
+            _folderRenameService.RenameFileService(FolderPath.Text);
         }
     }
 }

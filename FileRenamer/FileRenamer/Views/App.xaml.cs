@@ -28,8 +28,10 @@ namespace FileRenamer.Views
 
             _container.Bind<IFileService>().To<FileService>();
             _container.Bind<IRenameFile>().To<FileRenameService>();
-            _container.Bind<IExtractInformation>().To<TextExtractorCbaTransactionListingStatement>();
-            _container.Bind<IDebugTextExtractionRegion>().To<TextExtractorCbaTransactionListingStatement>();
+            _container.Bind<IRenameFolderService>().To<FolderRenameService>();
+            _container.Bind<IExtractInformation>().To<TextExtractorCbaStatement>();
+            _container.Bind<IDebugTextExtractionRegion>().To<TextExtractorCbaStatement>();
+
         }
 
         private void ComposeObjects()

@@ -1,11 +1,18 @@
 ﻿using System.IO;
 using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace FileRenamer.Services.Impl
 {
-
     public class FileService : IFileService
     {
+        public string SelectFolderDialog()
+        {
+            var dialog = new CommonOpenFileDialog { IsFolderPicker = true };
+
+            return dialog.ShowDialog() == CommonFileDialogResult.Ok ? dialog.FileName : "";
+        }
+
         public string OpenFileDialog()
         {
             OpenFileDialog fileDialog = new OpenFileDialog();
@@ -31,6 +38,11 @@ namespace FileRenamer.Services.Impl
         public string GetFileExtension(string path)
         {
             return Path.GetExtension(path);
+        }
+
+        public string[] GetFiles(string path, string searchPattern)
+        {
+            return Directory.GetFiles(path, searchPattern);
         }
 
         public void MoveFile(string sourceFile, string destinationFile)
